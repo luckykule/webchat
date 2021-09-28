@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Web Chat</title>
+	<meta charset="UTF-8">
+    <title>peerjs-video call</title>
+    <script src="test/lib/peer.min.js"></script>
+    <script src="test/lib/adapter-latest.js"></script>
+    <script src="test/lib/jquery-1.12.4.js"></script>
+    <script src="test/lib/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="test/css/common.css" />
+    <link rel="stylesheet" type="text/css" href="test/css/jquery-ui.css" />
+</head>
+
+
+<style type="text/css">
+	
+	@font-face{
+
+		font-family: headFont;
+		src: url(ui/fonts/Summer-Vibes-OTF.otf);
+	}
+
+	@font-face{
+
+		font-family: myFont;
+		src: url(ui/fonts/OpenSans-Regular.ttf);
+	}
+
+	
+
+	#wrapper{
+
+		max-width:900px;
+		min-height: 500px;
+		max-height: 630px;
+		display:flex;
+		margin: auto;
+		color: white;
+		font-family: myFont;
+		font-size: 13px;
+	}
+
+	#left_pannel{
+
+		min-height: 500px;
+		background-color: #27344b;
+		flex: 1;
+		text-align: center;
+
+	}
+
+	#profile_image{
+
+		width: 50%;
+		border: solid thin white;
+		border-radius: 50%;
+		margin:10px;
+
+	}
+
+	#left_pannel label{
+
+		width: 100%;
+		height: 20px;
+		display: block;
+		background-color: #404b56;
+		border-bottom:solid thin #ffffff55; 
+		cursor: pointer;
+		padding: 5px;
+		transition: all 1s ease;
+	}
+
+	#left_pannel label:hover{
+ 
+		background-color: #778593;
+	}
+
+	#left_pannel label img{
+
+		float: right;
+		width:25px;
+	}
+
+	#right_pannel{
+
+		min-height: 500px;
+		flex: 4;
+		text-align: center;
+	}
+
+	#header{
+
+		background-color: #485b6c;
+		height:70px;
+		font-size: 40px;
+		text-align: center;
+		font-family: headFont;
+		position: relative;
+	}
+	
+	#inner_left_pannel{
+
+		background-color: #383e48;
+		flex: 1;
+		min-height: 430px;
+		max-height: 530px;
+	}
+
+
+	#inner_right_pannel{
+
+		background-color: #f2f7f8;
+		flex: 2;
+		min-height: 430px;
+		transition: all 2s ease;
+		max-height: 530px;
+	}
+
+	#radio_contacts:checked ~ #inner_right_pannel{
+
+		flex: 0;
+	}
+
+	#radio_settings:checked ~ #inner_right_pannel{
+
+		flex: 0;
+	}
+ 
+ 	#contact{
+
+ 		width: 100px;
+ 		height: 120px;
+ 		margin: 10px;
+ 		display: inline-block;
+ 		vertical-align: top;
+  	}
+	
+	#contact img{
+
+		width: 100px;
+		height: 100px;
+  	}
+
+ 	#active_contact{
+
+  		height: 70px;
+ 		margin: 10px;
+ 		border: solid thin #aaa;
+ 		padding:2px;
+ 		background-color: #eee;
+ 		color: #444;
+   	}
+	
+	#active_contact img{
+
+		width: 70px;
+		height: 70px;
+		float:left;
+		margin:2px;
+  	}
+	
+	#message_left{
+
+  		margin: 10px;
+  		padding:2px;
+  		padding-right:10px;
+ 		background-color: #c979d5;
+ 		color: white4;
+ 		float:left;
+ 		box-shadow: 0px 0px 10px #aaa;
+  		border-bottom-left-radius: 50%;
+  		border-top-right-radius: 30%;
+  		position: relative;
+  		width:60%;
+  		min-width: 200px;
+   	}
+	
+	#message_left #prof_img{
+
+		width: 60px;
+		height: 60px;
+		float:left;
+		margin:2px;
+		border-radius: 50%;
+		border: solid 2px white;
+  	}
+
+	#message_left div{
+
+		width: 20px;
+		height: 20px;
+		background-color: #34474f;
+		border: solid 2px white;
+		border-radius: 50%;
+		position: absolute;
+		left:-10px;
+		top:20px;
+  	}
+
+	#message_right{
+
+  		margin: 10px;
+  		padding:2px;
+  		padding-right:10px;
+ 		background-color: #fbffee;
+ 		color: #444;
+ 		float:right;
+ 		box-shadow: 0px 0px 10px #aaa;
+  		border-bottom-right-radius: 50%;
+  		border-top-left-radius: 30%;
+  		position: relative;
+  		width:60%;
+  		min-width: 200px;
+   	}
+	
+	#message_right #prof_img{
+
+		width: 60px;
+		height: 60px;
+		float:left;
+		margin:2px;
+		border-radius: 50%;
+		border: solid 2px white;
+  	}
+
+  	#message_right div img{
+
+		width: 25px;
+		height: 18px;
+		float:none;
+		margin:0px;
+		border-radius: 50%;
+		border: none;
+		position:absolute;
+		top:30px;
+		right:10px;
+  	}
+
+	#message_right #trash{
+
+		width: 20px;
+		height: 20px;
+ 		position:absolute;
+		top:15px;
+		left:-10px;
+		cursor: pointer;
+  	}
+
+  	#message_left #trash{
+
+		width: 20px;
+		height: 20px;
+ 		position:absolute;
+		top:15px;
+		right:-10px;
+		cursor: pointer;
+  	}
+
+
+
+	#message_right div{
+
+		width: 20px;
+		height: 20px;
+		background-color: #34474f;
+		border: solid 2px white;
+		border-radius: 50%;
+		position: absolute;
+		right:-10px;
+		top:20px;
+  	}
+
+  	.loader_on{
+
+  		position: absolute;
+  		width: 30%;
+   	}
+
+	.loader_off{
+
+  		display: none;
+   	}
+
+   	.image_on{
+
+  		position: absolute;
+   		height: 450px;
+  		width: 450px;
+   		margin:auto;
+  		z-index: 10;
+  		top:50px;
+  		left:50px;
+   	}
+
+	.image_off{
+
+  		display: none;
+   	}
+
+	#cavs{
+		border: 1px solid #CC6600;   
+		border-radius:25px;
+		box-shadow: 10px 10px 5px #888888;
+	}
+	#kuang{
+		margin-left: auto;
+		margin-right: auto;
+		width:850px;
+		height: 50px;
+		margin-top: 15px;
+		border-radius:25px;
+		box-shadow: 10px 10px 5px #888888;	
+	}
+	#k1{
+		float: left;
+		margin-left: 20px;
+	}
+	.button {
+    background-color: #F9D448; /* 土黄色 */
+    border: none;
+    color: white;
+    padding: 6px 15px;
+    text-align: center;
+    border-radius:25px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+	.button2:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+
+
+	#btnRegister {
+	  width: 130px;
+	  height: 40px;
+	  background: linear-gradient(to bottom, #808080 0%,#3C3C3C 100%); /* W3C */
+	  border: none;
+	  border-radius: 5px;
+	  position: relative;
+	  border-bottom: 4px solid ##4C2C32;
+	  color: #fbfbfb;
+	  font-weight: 600;
+	  font-family: 'Open Sans', sans-serif;
+	  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+	  font-size: 15px;
+	  text-align: left;
+	  text-indent: 5px;
+	  box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+	  cursor: pointer;
+
+	/* Just for presentation */  
+	  display: block;
+	  /*margin-left:25%;*/
+	  margin: 0 auto;
+	  margin-bottom: 20px;
+	}
+
+	#btnRegister:active {
+	  box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
+	  top: 1px;
+	}
+
+	#btnRegister:after {
+	  content: "";
+	  width: 0;
+	  height: 0;
+	  display: block;
+	  border-top: 20px solid #187dbc;
+	  border-bottom: 20px solid #187dbc;
+	  border-left: 16px solid transparent;
+	  border-right: 20px solid #187dbc;
+	  position: absolute;
+	  opacity: 0.6; 
+	  right: 0;
+	  top: 0;
+	  border-radius: 0 5px 5px 0;  
+	}
+
+	#btnclose {
+	  width: 130px;
+	  height: 40px;
+	  background: linear-gradient(to bottom, #808080 0%,#3C3C3C 100%); /* W3C */
+	  border: none;
+	  border-radius: 5px;
+	  position: relative;
+	  border-bottom: 4px solid #4C2C32;
+	  color: #fbfbfb;
+	  font-weight: 600;
+	  font-family: 'Open Sans', sans-serif;
+	  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+	  font-size: 15px;
+	  text-align: right;
+	  text-indent: 5px;
+	  box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
+	  cursor: pointer;
+
+	/* Just for presentation */  
+	  display: block;
+	  margin: 0 auto;
+	  margin-bottom: 20px;
+	  /*margin-left:10%;*/
+	}
+	#btnclose:back {
+	  text-align: right;
+	  padding-right: 12px;
+	  box-sizing: border-box;
+	}
+	#btnclose:after {
+	  content: "";
+	  width: 0;
+	  height: 0;
+	  display: block;
+	  border-top: 20px solid #187dbc;
+	  border-bottom: 20px solid #187dbc;
+	  border-right: 16px solid transparent;
+	  border-left: 20px solid #187dbc;
+	  position: absolute;
+	  opacity: 0.6; 
+	  left: 0;
+	  top: 0;
+	  border-radius: 5px 0 0 5px;    
+	}
+
+
+
+	
+</style>
+<body style=" text-align:center; margin:0 auto">
+
+	<div id="wrapper">
+		
+		<div id="left_pannel">
+			<br>
+			<div id="user_info" style="padding: 10px;">
+				<img id="userimage" src="ui/images/user_male.jpg" style="height: 100px;width: 100px;">
+				<br>
+				<span id="username">Username</span>
+				<br>
+				<span id="userid" style="font-size: 12px;opacity: 0.5;">email@gmail.com</span>
+				
+				<br>
+				<br>
+				<br>
+				<!-- <div>
+					<label id="label_chat" for="radio_chat">function1 <img src="ui/icons/chat.png"></label>
+					<label id="label_contacts" for="radio_contacts">function2 <img src="ui/icons/contacts.png"></label>
+					<label id="label_settings" for="radio_settings">function3<img src="ui/icons/settings.png"></label>
+					<label id="logout" for="radio_logout">function4<img src="ui/icons/logout.png"></label>
+				</div> -->
+
+			</div>
+			<b style="text-align:center;">Videoing With</b>
+			<div id="user_info" style="padding: 10px;">
+				<br>
+				<img id="reciverimage" src="ui/images/user_male.jpg" style="height: 100px;width: 100px;">
+				<br>
+				<span id="recivername">Username</span>
+				<br>
+				<span id="reciverid" style="font-size: 12px;opacity: 0.5;">email@gmail.com</span>
+				<br>
+				<br>
+				<br>
+
+			</div>
+		</div>
+		<div id="right_pannel">
+			<div id="header">
+				<div id="loader_holder" class="loader_on"><!-- <img style="width:70px;" src="ui/icons/giphy.gif"> --></div>
+
+				<div id="image_viewer" class="image_off" onclick="close_image(event)"></div>
+				Web Chat
+			</div>
+			
+			<div id="container" style="display: flex;">
+ 				
+				<div id="inner_left_pannel">
+					<table style="width:100%"; >
+				        
+				        <tr>
+				            <td colspan="2">
+				               <select id="videoSelect" style="width:50%;text-align:center;text-align-last:center； "></select>
+				            </td>
+				            <td></td>
+				        </tr>
+				        <div style="">
+				        <tr>
+				            <td style="width:50%">
+				               <!-- <div style=" text-align:center ;">  -->
+				               	<video id="localVideo" autoplay controls style="width:100%";></video> 
+				               <!-- </div> -->
+				            </td>
+				            <td style="width:50%">
+				                <!-- <div style=" text-align:center ;"> -->
+				                 <video id="remoteVideo" autoplay controls style="";></video>
+				             <!-- </div> -->
+				            </td>
+				        </tr>
+
+				        <tr>
+				            <td align="center">local video</td>
+				            <td align="center">remote video</td>
+				        </tr>
+				    	</div>
+				    	 <tr></tr>
+					</table>			 
+
+					<div style="height:25% ;width:100%;text-align:center;display: flex;align-items: center;">
+					
+								<button id="btnRegister">running!</button>
+							
+								<button id="btnclose"  >ending!</button>
+						
+					</div>
+
+
+
+				</div>
+					
+			</div>
+
+		</div>
+	</div>
+	<div style="margin:5px auto;background-color: #D3D3D3;width:900px;height: 600px;">
+		<div style="margin:0 auto;background-color: #485b6c;width:900px;font-size: 40px;text-align: center;font-family: headFont;position: relative;color: white;">share canvas</div>
+		<canvas id = "cavs" width ="800" height="400" style="background-color: white;margin-top: 10px;"></canvas><br/>
+		
+		<div id="kuang" style="background-color:#FFFFE0;">
+			<div id="k1">
+				<input type="color" id="color" class="button button2">
+			</div>
+			<div id="k1">
+				<input type="button" value="保存" id="baocun" class="button button2" >
+			</div>
+			<div id="k1">
+				<input type="button" value="下载" id="xiazai" class="button button2" >
+			</div>
+			<div id="k1">
+				<input type="button" value="撤销" id="chexiao" class="button button2" >
+			</div>
+			<div id="k1">
+				<input type="button" value="清屏" id="qingping" class="button button2" >
+			</div>
+			<div id="k1">
+				<input type="button" value="线条" id="Line" class="button button2" >
+			</div>
+			<div id="k1">
+				<input type="button" value="橡皮" id="xpc" class="button button2" >
+			</div>
+			<div id="k1">
+				<input class="button button2" type="range" id="cuxi" value="3"  min="0" max="10">
+			</div>
+		</div>
+			<div style="text-align:center;margin-top: 30px;margin-left: auto;margin-right: auto;"></div>
+	</div>
+
+	<div id="dialog-confirm" title="accept video call?">
+        <p><span class="ui-icon ui-icon-info" style="float:left; margin:12px 12px 20px 0;"></span><label id="lblFrom"></label> is calling you, do you accept?</p>
+    </div>
+    <div id="videoending" title="Close video calling?">
+        <p><span class="ui-icon ui-icon-info" style="float:left; margin:12px 12px 20px 0;"></span> your action will close the video call, are you sure?</p>
+    </div>
+
+    	<script>
+		var caller_name;
+   		var reciver_name;
+   		var caller_id;
+   		var reciver_id;
+		var reciver_image;
+		var caller_image;
+
+
+		var query = location.search.substring(1);
+	    var values= query.split(",");
+	    // alert("owner : " + values);
+	    for(var i = 0; i < values.length; i++)
+	    {
+	    var pos = values[i].indexOf('=');
+	    if (pos == -1) continue;
+	    var para = values[i].substring(0, pos);
+	    var value = values[i].substring(pos+1);
+	    //alert(paramname +","+value );
+
+	    if(para == "caller_name")
+	    {
+	     caller_name = value;
+	    }
+	    else if(para == "reciver_name")
+	    {
+	     reciver_name = value;
+	    }
+	    else if(para == "caller_id")
+	    {
+	     caller_id = value;
+	    }
+	    else if(para == "reciver_id")
+	    {
+	     reciver_id = value;
+	    }
+	    else if(para == "reciver_image")
+	    {
+	     reciver_image = value;
+	     console.log(reciver_image+'?');
+	    }
+	    else if(para == "caller_image")
+	    {
+	     caller_image = value;
+	    }
+	    }
+ 	document.getElementById("username").innerHTML=caller_name;
+ 	document.getElementById("recivername").innerHTML=reciver_name;
+ 	document.getElementById("reciverid").innerHTML="id: "+caller_id;
+ 	document.getElementById("userid").innerHTML="id: "+reciver_id;
+ 	document.getElementById("userimage").src=caller_image;
+ 	//console.log('gg');
+ 	document.getElementById("reciverimage").src=reciver_image;
+
+ 			usera=caller_id+'p';
+        	userb=reciver_id+'p';
+        	console.log(usera);
+</script>
+    <script src="videocall.js"></script>
+     <script type="text/javascript" src="huabu2.js"></script>
+</body>
+</html>
+
+<script type="text/javascript">
+	
+	
+</script>
